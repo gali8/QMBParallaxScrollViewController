@@ -87,11 +87,14 @@
     
     [self addGestureReconizer];
     
+    //DDmod create gesture for bottomview
+    self.bottomViewGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
+    [self.bottomViewGestureRecognizer setNumberOfTouchesRequired:1];
+    [self.bottomViewGestureRecognizer setNumberOfTapsRequired:1];
+    
     [self updateForegroundFrame];
     [self updateContentOffset];
     
-
-
 }
 
 #pragma mark - Gestures
@@ -143,7 +146,8 @@
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     
     [self updateContentOffset];
-    if ([self.scrollViewDelegate respondsToSelector:_cmd]) {
+    if ([self.scrollViewDelegate respondsToSelector:_cmd]) //_cmd è il selector del metodo dov'è incluso
+    {
         [self.scrollViewDelegate scrollViewDidScroll:scrollView];
     }
 }
@@ -163,7 +167,7 @@
 
 - (void)setBackgroundHeight:(CGFloat)backgroundHeight {
     _topHeight = backgroundHeight;
-
+    
     [self updateForegroundFrame];
     [self updateContentOffset];
 }
@@ -180,10 +184,8 @@
 #pragma mark Parallax Effect
 
 
-- (void)updateForegroundFrame {
-    
-    
-    
+- (void)updateForegroundFrame
+{
     if ([_foregroundView isKindOfClass:[UIScrollView class]]){
         _foregroundView.frame = CGRectMake(0.0f, _topHeight, self.view.frame.size.width, MAX(((UIScrollView *)_foregroundView).contentSize.height,_foregroundView.frame.size.height));
         CGSize size = CGSizeMake(self.view.frame.size.width,MAX(((UIScrollView *)_foregroundView).contentSize.height,_foregroundView.frame.size.height) + _topHeight);
@@ -201,7 +203,7 @@
 }
 
 - (void)updateContentOffset {
-
+    
     if (2*self.foregroundScrollView.contentOffset.y>_foregroundView.frame.origin.y){
         [self.foregroundScrollView setShowsVerticalScrollIndicator:YES];
     }else {
@@ -233,13 +235,15 @@
         return;
     }
     
-
+    
 }
 
 - (void) showFullTopView:(BOOL)show {
     
     _isAnimating = YES;
-    [self.foregroundScrollView setScrollEnabled:NO];
+    
+    //DDmod replaced setScrollEnabled with setUserInteractionEnabled
+    [self.foregroundScrollView setUserInteractionEnabled:NO];
     
     [UIView animateWithDuration:.3
                           delay:0.0
@@ -247,16 +251,22 @@
                      animations:^{
                          
                          [self changeTopHeight:show ?  _maxHeight : _startTopHeight];
+                         
                      }
                      completion:^(BOOL finished){
                          
+                         
                          _isAnimating = NO;
-                         [self.foregroundScrollView setScrollEnabled:YES];
+                         [self.foregroundScrollView setUserInteractionEnabled:YES];
                          
                          if (self.state == QMBParallaxStateFullSize){
                              self.state = QMBParallaxStateVisible;
+                             //DDmod remove gesture
+                             [self.foregroundView removeGestureRecognizer:self.bottomViewGestureRecognizer];
                          }else {
                              self.state = QMBParallaxStateFullSize;
+                             //DDmod add gesture
+                             [self.foregroundView addGestureRecognizer:self.bottomViewGestureRecognizer];
                          }
                          
                          if ([self.delegate respondsToSelector:@selector(parallaxScrollViewController:didChangeState:)]){
@@ -264,15 +274,15 @@
                          }
                      }];
     
-    
 }
 
 - (void) changeTopHeight:(CGFloat) height{
     
     _topHeight = height;
     
-    [self updateContentOffset];
+    //DDmod changed order of 2 methods below
     [self updateForegroundFrame];
+    [self updateContentOffset];
     
     if ([self.delegate respondsToSelector:@selector(parallaxScrollViewController:didChangeTopHeight:)]){
         [self.delegate parallaxScrollViewController:self didChangeTopHeight:height];

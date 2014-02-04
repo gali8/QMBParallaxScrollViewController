@@ -12,7 +12,9 @@
 <li>Supports any UIScrollView</li>
 <li>Use any UIViewController for the top view</li>
 <li>Rich delegation methods for:<ul>
+	<li>Flutter bug solved</li>
 	<li>Top view tap</li>
+	<li>Bottom view tap (when reduced)</li>
 	<li>Pan over boundary</li>
 	<li>Full size top view</li>
 	<li>Scroll states</li>

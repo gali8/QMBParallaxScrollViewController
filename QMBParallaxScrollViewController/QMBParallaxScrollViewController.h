@@ -33,7 +33,7 @@ typedef NS_ENUM(NSUInteger, QMBParallaxGesture) {
 @optional
 
 /**
- * Callback when the user tapped the top-view 
+ * Callback when the user tapped the top-view
  * sender is usually the UITapGestureRecognizer instance
  */
 - (void) parallaxScrollViewController:(QMBParallaxScrollViewController *) controller didChangeGesture:(QMBParallaxGesture)newGesture oldGesture:(QMBParallaxGesture)oldGesture;

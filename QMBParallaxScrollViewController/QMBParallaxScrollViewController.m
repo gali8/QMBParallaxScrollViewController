@@ -111,8 +111,10 @@
 - (void)enableTapGestureTopView:(BOOL)enable{
     if (enable) {
         [_backgroundView addGestureRecognizer:self.topViewGestureRecognizer];
+        [_foregroundView removeGestureRecognizer:self.bottomViewGestureRecognizer];
     }else {
         [_backgroundView removeGestureRecognizer:self.topViewGestureRecognizer];
+        [_foregroundView addGestureRecognizer:self.bottomViewGestureRecognizer];
     }
 }
 
@@ -262,11 +264,11 @@
                          if (self.state == QMBParallaxStateFullSize){
                              self.state = QMBParallaxStateVisible;
                              //DDmod remove gesture
-                             [self.foregroundView removeGestureRecognizer:self.bottomViewGestureRecognizer];
+                             [self enableTapGestureTopView:YES];
                          }else {
                              self.state = QMBParallaxStateFullSize;
                              //DDmod add gesture
-                             [self.foregroundView addGestureRecognizer:self.bottomViewGestureRecognizer];
+                             [self enableTapGestureTopView:NO];
                          }
                          
                          if ([self.delegate respondsToSelector:@selector(parallaxScrollViewController:didChangeState:)]){
